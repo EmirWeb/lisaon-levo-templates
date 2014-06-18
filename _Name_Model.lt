@@ -1,0 +1,130 @@
+{{$orig := .}}
+{{range .Models}}
+{{$models := .}}
+<<levo filename:{{.Name}}Model.java directory:src/main/java/{{$orig.PackagePath}}/models>>
+package {{$orig.PackageName}}.models;
+
+import android.content.ContentValues;
+import android.content.Context;
+
+import com.google.common.collect.Lists;
+
+import java.util.Arrays;
+import java.util.List;
+
+import mobi.liason.loaders.Path;
+import mobi.liason.mvvm.database.Column;
+import mobi.liason.mvvm.database.Column.Type;
+import mobi.liason.mvvm.database.Model;
+import mobi.liason.mvvm.database.ModelColumn;
+
+public class {{$models.Name}}Model extends Model {
+
+   public static final String NAME = {{.Name}}Model.class.getSimpleName();
+
+   public static ContentValues getContentValues(final {{$models.Name}} {{camelcase $models.Name}}) {
+      final ContentValues contentValues = new ContentValues();
+   {{range $index, $prop := .Properties}}!>
+    {{if (isLiasonSqliteType $prop)}}!>
+      contentValues.put(Columns.{{$prop.RemoteIdentifier | upper}}.getName(), {{camelcase $models.Name}}.get{{titlecase $prop.LocalIdentifier}}());
+    {{end}} !>
+   {{end}}!>
+      return contentValues;
+   }
+
+   @Override
+   public String getName(final Context context) {
+       return NAME;
+   }
+
+   @Override
+   public List<Column> getColumns(final Context context) {
+       return Arrays.asList(Columns.COLUMNS);
+   }
+
+   @Override
+   public List<Path> getPaths(Context context) {
+       return Lists.newArrayList(Paths.PATH);
+   }
+
+   public static class Columns {
+   {{range $index, $prop := .Properties}}!>
+      {{if (isLiasonSqliteType $prop)}}!>
+      public static final ModelColumn {{snakecase $prop.RemoteIdentifier | upper}} = new ModelColumn({{$models.Name}}Model.NAME, {{$models.Name}}.Fields.{{snakecase $prop.RemoteIdentifier | upper}}, {{toLiasonSqliteType $prop}});
+      {{end}}!>
+   {{end}}!>
+      public static final Column[] COLUMNS = { {{toColumnArray .Properties}} };
+   }
+
+   public static class Paths {
+      public static final Path PATH = new Path(NAME);
+   }
+}
+<<levo>>
+{{end}}
+
+
+{{range $index, $models := .Models}}
+   {{range .Properties}}
+      {{if not (isLiasonSqliteType .)}}
+<<levo filename:{{$models.Name}}{{titlecase .LocalIdentifier}}JoinModel.java directory:src/main/java/{{$orig.PackagePath}}/models/joinmodels>>
+package {{$orig.PackageName}}.models.joinmodels;
+
+import android.content.ContentValues;
+import android.content.Context;
+
+import com.google.common.collect.Lists;
+
+import java.util.Arrays;
+import java.util.List;
+
+import mobi.liason.loaders.Path;
+import mobi.liason.mvvm.database.Column;
+import mobi.liason.mvvm.database.Column.Type;
+import mobi.liason.mvvm.database.Model;
+import mobi.liason.mvvm.database.ModelColumn;
+
+public class {{$models.Name}}{{titlecase .LocalIdentifier}}JoinModel extends Model {
+
+   public static final String NAME = {{$models.Name}}{{titlecase .LocalIdentifier}}JoinModel.class.getSimpleName();
+
+public static ContentValues getContentValues(final Long {{camelcase $models.Name}}Id, final Long {{camelcase .LocalIdentifier}}Id) {
+      final ContentValues contentValues = new ContentValues();
+   
+      contentValues.put(Columns.{{camelcase $models.Name | upper}}_ID.getName(), {{camelcase $models.Name}}Id);
+
+      contentValues.put(Columns.{{camelcase .LocalIdentifier | upper}}_ID.getName(), {{camelcase .LocalIdentifier}}Id);
+   
+      return contentValues;
+   }
+
+   @Override
+   public String getName(final Context context) {
+       return NAME;
+   }
+
+   @Override
+   public List<Column> getColumns(final Context context) {
+       return Arrays.asList(Columns.COLUMNS);
+   }
+
+   @Override
+   public List<Path> getPaths(Context context) {
+       return Lists.newArrayList(Paths.PATH);
+   }
+
+   public static class Columns {
+      public static final ModelColumn {{camelcase $models.Name | upper}}_ID = new ModelColumn({{$models.Name}}{{titlecase .LocalIdentifier}}JoinModel.NAME, "{{snakecase $models.Name}}_id", Type.integer);
+      public static final ModelColumn {{camelcase .LocalIdentifier | upper}}_ID = new ModelColumn({{$models.Name}}{{titlecase .LocalIdentifier}}JoinModel.NAME, "{{snakecase .LocalIdentifier}}_id", Type.integer);
+
+      public static final Column[] COLUMNS = { {{camelcase $models.Name | upper}}_ID,  {{camelcase .LocalIdentifier | upper}}_ID};
+   }
+
+   public static class Paths {
+      public static final Path PATH = new Path(NAME);
+   }
+}
+<<levo>>
+      {{end}}
+   {{end}}
+{{end}}

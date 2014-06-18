@@ -1,0 +1,16 @@
+{{$orig := .}}
+<<levo filename:{{.ProjectName}}Provider.java directory:src/main/java/{{$orig.PackagePath}}/overrides>>
+package {{$orig.PackageName}}.overrides;
+
+public class {{$orig.ProjectName}}Provider extends Provider {
+    @Override
+    public String getAuthority(Context context) {
+        return {{$orig.ProjectName}}UriUtilities.getContentAuthority(context);
+    }
+
+    @Override
+    protected DatabaseHelper onCreateDatabaseHelper(Context context) {
+        return new {{$orig.ProjectName}}DatabaseHelper(context);
+    }
+}
+<<levo>>

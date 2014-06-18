@@ -1,0 +1,28 @@
+{{$orig := .}}
+<<levo filename:{{.ProjectName}}TaskService.java directory:src/main/java/{{$orig.PackagePath}}/overrides>>
+package {{$orig.PackageName}}.overrides;
+
+public class {{.ProjectName}}TaskService extends TaskService {
+
+    public static void startTask(final Context context, final Uri uri) {
+        startTask(context, uri, {{.ProjectName}}TaskService.class);
+    }
+
+    public static void forceStartTask(final Context context, final Uri uri) {
+        forceStartTask(context, uri, {{.ProjectName}}TaskService.class);
+    }
+
+    @Override
+    public String getAuthority(final Context context) {
+        final Resources resources = context.getResources();
+        return resources.getString(R.string.{{snakecase .ProjectName | lower}}_authority);
+    }
+
+    @Override
+    public Map<Path, Class> getPathTaskMap(Context context) {
+        final Map<Path, Class> mPathClassMap = new HashMap<Path, Class>();
+        //TODO: Map Paths to Tasks
+        return mPathClassMap;
+    }
+}
+<<levo>>

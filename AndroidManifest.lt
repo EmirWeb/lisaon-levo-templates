@@ -1,0 +1,33 @@
+{{$orig := .}}
+
+<<levo filename:AndroidMaifest.xml directory:src/main/>>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="{{$orig.PackageName}}">
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="18" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".{{$orig.ProjectName}}Application"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/{{snakecase .ProjectName}}_application_name">
+
+        <provider
+            android:name=".overrides.{{$orig.ProjectName}}Provider"
+            android:authorities="@string/authority_{{snakecase $orig.ProjectName | lower}}"
+            android:exported="false" />
+
+        <service
+            android:name=".overrides.{{$orig.ProjectName}}TaskService"
+            android:exported="false" />
+
+    </application>
+
+</manifest>
+
+<<levo>>
+

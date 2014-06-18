@@ -1,0 +1,19 @@
+{{$orig := .}}
+{{range $index, $model := .Models}}
+<<levo filename:activity_{{snakecase .Name | lower}}.xml directory:src/main/res/layout>>
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+   {{range $index, $prop := .Properties}}!>
+   <TextView
+      android:id="@+id/activity_{{snakecase $model.Name | lower}}_{{snakecase $prop.RemoteIdentifier | lower}}_text_view"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+
+   {{end}}!>
+
+</RelativeLayout>
+<<levo>>
+{{end}}

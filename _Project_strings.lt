@@ -1,0 +1,9 @@
+{{$orig := .}}
+<<levo filename:strings_{{snakecase .ProjectName | lower}}.xml directory:src/main/res/values>>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="{{snakecase .ProjectName}}_application_name">{{.ProjectName}}</string>
+    <string name="{{snakecase .ProjectName | lower}}_authority">{{.PackageName}}</string>
+</resources>
+<<levo>>
+

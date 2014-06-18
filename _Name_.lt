@@ -1,0 +1,46 @@
+{{$orig := .}}
+{{range .Models}}
+<<levo filename:{{.Name}}.java directory:src/main/java/{{$orig.PackagePath}}/models>>
+package {{$orig.PackageName}}.models;
+
+{{if hasListType .}}import java.util.List;
+{{end}}!>
+import com.google.gson.annotations.SerializedName;
+
+public class {{.Name}} {{if ne .Parent ""}}extends {{.Parent}}{{end}} {
+
+   {{range $index, $prop := .Properties}}!>
+   @SerializedName(Fields.{{snakecase $prop.RemoteIdentifier | upper}}) 
+      {{if $prop.IsSetType}}!>
+   private final ArrayList<{{$prop.PropertyType}}> m{{titlecase $prop.LocalIdentifier}};
+      {{else}}!>
+   private final {{$prop.PropertyType}} m{{titlecase $prop.LocalIdentifier}};
+      {{end}}!>
+   {{end}}
+   
+   public {{.Name}}({{range $index, $prop := .Properties}}{{if ne 0 $index}}, {{end}}{{if $prop.IsSetType}}final ArrayList<{{$prop.PropertyType}}> {{camelcase $prop.LocalIdentifier}}{{else}}final {{$prop.PropertyType}} {{camelcase $prop.LocalIdentifier}}{{end}}{{end}}) {
+   {{range $index, $prop := .Properties}}!>
+      m{{titlecase $prop.LocalIdentifier}} = {{camelcase $prop.LocalIdentifier}};
+   {{end}}!>
+   }
+
+   {{range $index, $prop := .Properties}}!>
+      {{if $prop.IsSetType}}
+   public ArrayList<{{$prop.PropertyType}}> get{{titlecase $prop.LocalIdentifier}}() {
+      return m{{titlecase $prop.LocalIdentifier}};
+   }
+      {{else}}
+   public {{$prop.PropertyType}} get{{titlecase $prop.LocalIdentifier}}() {
+      return m{{titlecase $prop.LocalIdentifier}};
+   }
+      {{end}}
+
+   {{end}}!>
+   public static class Fields {
+   {{range $index, $prop := .Properties}}!>
+      public static final String {{snakecase $prop.RemoteIdentifier | upper}} = "{{$prop.RemoteIdentifier}}";
+   {{end}}!>
+   }
+}
+<<levo>>
+{{end}}

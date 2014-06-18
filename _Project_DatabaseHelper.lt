@@ -1,0 +1,53 @@
+{{$orig := .}}
+<<levo filename:{{.ProjectName}}DatabaseHelper.java directory:src/main/java/{{$orig.PackagePath}}/overrides>>
+package {{$orig.PackageName}}.overrides;
+
+import android.content.Context;
+
+import {{$orig.PackageName}}.models.*;
+import {{$orig.PackageName}}.models.joinmodels.*;
+import {{$orig.PackageName}}.viewmodels.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import mobi.liason.loaders.Content;
+import mobi.liason.loaders.DatabaseHelper;
+
+public class {{.ProjectName}}DatabaseHelper extends DatabaseHelper {
+
+    private static final String DATA_BASE_NAME = "{{.ProjectName}}";
+    private static final int VERSION = 1;
+
+    public {{.ProjectName}}DatabaseHelper(Context context) {
+        super(context, DATA_BASE_NAME, VERSION);
+    }
+
+    @Override
+    public List<Content> getContent(Context context) {
+        final List<Content> contentList = new ArrayList<Content>();
+
+        {{range .Models}}!>
+            {{if isLiasonModel .}}!>
+        contentList.add(new {{.Name}}Model());
+            {{end}}!>
+        {{end}}
+        {{range $index, $model := .Models}}!>
+            {{if isLiasonModel .}}!>
+                {{range .Properties}}!>
+                    {{if not (isLiasonSqliteType .)}}!>
+        contentList.add(new {{$model.Name}}{{titlecase .LocalIdentifier}}JoinModel());
+                    {{end}}!>
+                {{end}}!>
+            {{end}}!>
+        {{end}}
+        {{range .Models}}!>
+            {{if isLiasonViewModel .}}!>
+        contentList.add(new {{.Name}}ViewModel());
+            {{end}}!>
+        {{end}}!>
+
+        return contentList;
+    }    
+}
+<<levo>>

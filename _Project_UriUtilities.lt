@@ -1,0 +1,17 @@
+{{$orig := .}}
+<<levo filename:{{.ProjectName}}UriUtilities.java directory:src/main/java/{{$orig.PackagePath}}/utilities>>
+package {{$orig.PackageName}}.utilities;
+
+public class {{$orig.ProjectName}}UriUtilities extends UriUtilities {
+
+	public static String getContentAuthority(final Context context){
+		final Resources resources = context.getResources();
+        return resources.getString(R.string.{{snakecase .ProjectName | lower}}_authority);
+	}
+
+    public static Uri getUri(final Context context, final Path path, final Object... objects) {        
+        final String authority = getContentAuthority(context);
+        return getUri(ContentResolver.SCHEME_CONTENT, authority, path, objects);
+    }
+}
+<<levo>>
